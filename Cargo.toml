@@ -1,6 +1,6 @@
 [package]
-name = "smart-osc"
+name = "socket_finder"
 version = "0.1.0"
-authors = ["Tom Gowan <s3549186@student.rmit.edu.au>"]
+authors = ["Tom Gowan <theflyingtom@gmail.com>"]
 
 [dependencies]
