@@ -9,9 +9,32 @@ extern crate o2;
 
 const max_msg_count: i32 = 50000;
 
+fn client_test(o2_msg_data_ptr data, const char *types,
+                 o2_arg_ptr *argv, int argc, void *user_data)
+{
+    msg_count++;
+    // the value we send is arbitrary, but we've already sent
+    // 1 message with value 1, so the 2nd message will have 2, etc...
+    int32_t i = msg_count + 1;
+
+    // server will shut down when it gets data == -1
+    if (msg_count >= max_msg_count) {
+        i = -1;
+        running = FALSE;
+    }
+    o2_send(server_addresses[msg_count % N_ADDRS], 0, "i", i);
+    if (msg_count % 10000 == 0) {
+        printf("client received %d messages\n", msg_count);
+    }
+    if (msg_count < 100) {
+        printf("client message %d is %d\n", msg_count, argv[0]->i32);
+    }
+    assert(msg_count == argv[0]->i32);
+}
 
 fn main(){
     let server_addresses: Vec<std::ffi::CString> = vec![];
+    let client_addresses: Vec<std::ffi::CString> = vec![];
     let mut msg_count = 0;
     let mut running = true;
 
@@ -24,9 +47,6 @@ fn main(){
    
     
     for i in 0..N_ADDRS{
-        let mut cs = CString::new();
-        write!(&mut cs, b"server/benchmark/{}", i).unwrap();
-        server_addresses.push(cs);
     }
 
     while o2.status("server") < O2_REMOTE {
@@ -50,11 +70,14 @@ fn main(){
         o2.poll();
         //usleep(2000); // 2ms // as fast as possible
         for event in o2.poll_events() {
-            match (event.path, event.ty) {
-                ("/client/benchmark/foo", OscType::Int(i)) => {
-                },
-                ("/client/bar/baz", OscType::String(s)) => {
-                },
+            for i in 0..N_ADDRS{
+                let mut cs = CString::new();
+                write!(&mut cs, b"/client/benchmark/{}", i).unwrap();
+                if event.path == cs{
+                    if let OscType::Int(i) = event.ty{
+
+                    }
+                }
             }
         }
     }
