@@ -24,7 +24,11 @@ impl Finder{
 }
 
 impl Beacon{
-    pub fn send(&self){
-        unimplemented!();
+    pub fn send(&self) -> Result<(), std::io::Error> {
+        let data = b"worked";
+        let socket = std::net::UdpSocket::bind("0.0.0.0:9091")?;
+        socket.set_broadcast(true)?;
+        socket.send_to(data, "255.255.255.255:9092")?;
+        Ok(())
     }
 }
