@@ -4,7 +4,7 @@ use socket_finder::Status;
 
 fn main(){
     
-    let mut finder = socket_finder::new("receiver_service".to_string()).unwrap();
+    let mut finder = socket_finder::finder("receiver_service".to_string()).unwrap();
 
     let mut target: Option<std::net::SocketAddrV4> = None;
     let socket = std::net::UdpSocket::bind("0.0.0.0:9090").unwrap();
@@ -21,7 +21,7 @@ fn main(){
         // Maintains a valid socket
         match finder.poll_status().unwrap(){
                 Status::Found(addr) => target = Some(addr),
-                Status::TimeSince(time_since) => println!("Time Since {:?}", time_since),
+                Status::TimeSinceLastReceived(time_since) => println!("Time Since {:?}", time_since),
         }
         std::thread::sleep( std::time::Duration::from_secs(2) );
     }
