@@ -2,6 +2,10 @@ use {HEADER, HEAD_SIZE, PORT_SIZE};
 use std;
 
 pub struct Beacon{
+    // This is the beacon
+    // HEADER: b"soc#"
+    // PORT: u16 ("The port you want to receive on")
+    // NAME: str ("The name connection")
     data: Vec<u8>
 }
 pub fn beacon(name: &str, address: u16) -> Beacon{
